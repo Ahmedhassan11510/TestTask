@@ -1,0 +1,146 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--===============================================================================================-->
+    <link rel="apple-touch-icon" sizes="76x76" href="~/assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="~/assets/img/favicon.png">
+
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="~/Login_Design/vendor/bootstrap/css/bootstrap.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="~/Login_Design/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="~/Login_Design/fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="~/Login_Design/vendor/animate/animate.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="~/Login_Design/vendor/css-hamburgers/hamburgers.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="~/Login_Design/vendor/animsition/css/animsition.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="~/Login_Design/vendor/select2/select2.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="~/Login_Design/vendor/daterangepicker/daterangepicker.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="~/Login_Design/css/util.css">
+    <link rel="stylesheet" type="text/css" href="~/Login_Design/css/main.css">
+    <!--===============================================================================================-->
+</head>
+<body>
+
+    <div class="limiter">
+        <div class="container-login100">
+            <div class="wrap-login100">
+                <div class="login100-form-title" style="background-image: url(../../Login_Design/images/bg-01.jpg);">
+                    <span class="login100-form-title-1">
+                        Sign In
+                    </span>
+                </div>
+
+                <form class="login100-form validate-form" id="formlog" onsubmit="return false">
+                    <b name='correctmassege' >Username or Password is Incorrect</b>
+                    <div class="wrap-input100 validate-input m-b-26" data-validate="Username is required">
+                        <span class="label-input100">Username</span>
+                        <input class="input100" type="text" name="username" placeholder="Enter username" required>
+                        <span class="focus-input100"></span>
+                    </div>
+
+                    <div class="wrap-input100 validate-input m-b-18" data-validate="Password is required">
+                        <span class="label-input100">Password</span>
+                        <input class="input100" type="password" name="pass" placeholder="Enter password" required>
+                        <span class="focus-input100"></span>
+                    </div>
+
+                    @*<div class="flex-sb-m w-full p-b-30">
+            <div class="contact100-form-checkbox">
+                <input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
+                <label class="label-checkbox100" for="ckb1">
+                    Remember me
+                </label>
+            </div>
+
+            <div>
+                <a href="#" class="txt1">
+                    Forgot Password?
+                </a>
+            </div>
+        </div>*@
+
+                    <div class="container-login100-form-btn">
+                        <button class="login100-form-btn">
+                            Login
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--===============================================================================================-->
+    <script src="~/Login_Design/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/Login_Design/vendor/animsition/js/animsition.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/Login_Design/vendor/bootstrap/js/popper.js"></script>
+    <script src="~/Login_Design/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/Login_Design/vendor/select2/select2.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/Login_Design/vendor/daterangepicker/moment.min.js"></script>
+    <script src="~/Login_Design/vendor/daterangepicker/daterangepicker.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/Login_Design/vendor/countdowntime/countdowntime.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/Login_Design/js/main.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("b").hide();
+            $("#formlog").on("submit", function () {
+                var usrname = $("input[name=username]").val();
+                var password = $("input[name = pass]").val();
+                $.ajax({
+                type: "POST",
+                url: '@Url.Action("Login")',
+                    data: '{username: ' + JSON.stringify(usrname) + ',password: ' + JSON.stringify(password) +'  }',  
+                contentType: "application/json;charset=utf-8",
+                    datatype: "json",
+                    success: function (Massage) {
+                        if (Massage.Massage == "SUCCESS") {
+                         window.location.href = '@Url.Action("Home","Office")';
+
+                        } else {
+                            $("#formlog input").val("");
+
+                            $("b").show(); 
+                            console.log(Massage);
+
+                        }
+                      
+
+                        
+                    },
+                error: function (ex) {
+
+                    
+                    console.log(ex);
+
+
+                    }
+            });
+
+            });
+        });
+
+    </script>
+</body>
+</html>

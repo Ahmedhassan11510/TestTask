@@ -1,0 +1,218 @@
+﻿
+@{
+    ViewBag.Title = "FreeConsultation";
+    Layout = "~/Views/Office/_Admin.cshtml";
+}
+
+<link href="~/jquery.dataTables.min.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header card-header-primary">
+                <h4 class="card-title ">Free Consultation</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover" id="freefctable">
+                        <thead class=" text-primary">
+                        <th>ID</th>
+                        <th> Name</th>
+                        <th>E_mail</th>
+                        <th>Phone</th>
+                        <th>Question</th>
+                        <th>Service</th>
+                        <th></th>
+                        <th></th>
+
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="bmyModal" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Update</h4>
+            </div>
+            <div class="modal-body">
+                <form id="form" onsubmit="return false">
+                    <div class="header_inp">
+                        <label id="idcon" hidden></label>
+                        <input type="text" class="form-control" id="Name" placeholder="Your Full Name *" required>
+                    </div>
+                    <div class="header_inp">
+                        <input type="text" class="form-control" id="E_mail" placeholder="Your Email ">
+                    </div>
+                    <div class="header_inp">
+                        <input type="text" class="form-control" id="Phone" placeholder="Your Phone *" required>
+                    </div>
+                    <div class="header_inp">
+                        <textarea class="form-control" id="Question" placeholder="Question" required></textarea>
+                    </div>
+                    <div class="header_inp">
+                        <input type="text" class="form-control" id="Service" placeholder="Service *" required>
+                    </div>
+                    <input type="submit" class="btn btn-danger" value="Update" />
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/jquery-min.js"></script>
+
+
+@*<script src="~/bootstrap.min.js"></script>
+    <script src="~/dataTables.bootstrap.min.js"></script>
+    <script src="~/dataTables.responsive.js"></script>
+    <script src="~/jquery-3.3.1.js"></script>
+    <script src="~/jquery.dataTables.min.js"></script>*@
+<script src="~/bootstrap.min.js"></script>
+
+
+<script>
+
+    $(document).ready(function () {
+        loaddata();
+        $("#form").on("submit", function () {
+            update();
+        });
+
+    });
+   setInterval(loaddata, 1000);
+        function loaddata() {
+
+            if ($.fn.dataTable.isDataTable('#freefctable')) {
+                table = $('#freefctable').DataTable();
+                //$("#dataTables-example tbody tr").empty();
+
+                $('#freefctable').DataTable().ajax.reload()
+
+            }
+            else {
+                $('#freefctable').DataTable({
+                    responsive: true,
+
+                    "ajax": {
+                        "type": "GET",
+                        "url": "@Url.Action("GetFCs")",
+                        "dataType": "json",
+                        "contentType": "application/json; charset=utf-8",
+
+                    },
+                    "columns": [
+                        { "data": "Id" }, { "data": "Name" }, { "data": "E_mail" },
+                        { "data": "Phone" }, { "data": "Question" }, { "data": "Service" },
+                        {
+                            "data": null,
+                            render: function (data, type, row) {
+                                return '<button type="button" class="btn btn-success" onclick=Delete(' + data["Id"] + ')>Delete</button>';
+                            },
+                            "targets": -1
+
+                        },
+                        {
+                            "data": null,
+                            render: function (data, type, row) {
+                                return '<button type="button" class="btn btn-primary" onclick=AddData(' + data["Id"] + '); data-toggle="modal" data-target="#bmyModal">Update</button>';
+                            },
+                            "targets": -1
+
+                        }
+
+                    ]
+
+                });
+            }
+
+        }
+    function Delete(id) {
+        if (confirm("Are You Sure You Want to Delete?")) {
+                $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DeleteFC")',
+                dataType: 'json',
+                data: '{id: ' + JSON.stringify(id) + '}',
+                contentType: "application/json; charset=utf-8",
+                success: function () {
+
+
+                    alert("Data has been Deleted successfully.");
+
+
+                },
+                error: function () {
+                    alert("Error while Deleting data");
+                }
+            });
+        }
+        }
+
+
+     function AddData(id){
+            $.ajax({
+
+                type: 'POST',
+                url: '@Url.Action("GetFC")',
+                data: '{id: ' + JSON.stringify(id) + '}',
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+
+                   $("#Name").val(data.data.Name);
+                    $("#E_mail").val(data.data.E_mail);
+                    $("#Question").val(data.data.Question);
+                    $("#Phone").val(data.data.Phone);
+                    $("#Service").val(data.data.Service);
+                    $("#idcon").text(data.data.Id);
+
+
+
+
+
+                }
+            });
+
+        }
+    function update() {
+        var numid = parseInt($("#idcon").text());
+            var Consult = {};
+            Consult.Name = $("#Name").val();
+            Consult.E_mail = $("#E_mail").val();
+            Consult.Phone = $("#Phone").val();
+            Consult.Question = $("#Question").val();
+            Consult.Service = $("#Service").val();
+
+
+             $.ajax({
+                type: "POST",
+                url: '@Url.Action("UpdateFC")',
+                 data: '{id: ' + JSON.stringify(numid) + ',updateconsult:' + JSON.stringify(Consult)+' }',
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function () {
+                    alert("Data has been Updated successfully.");
+                    $('#bmyModal').removeClass('show');
+
+                   // loaddata();
+                },
+                error: function () {
+                    alert("Error while inserting data");
+                }
+            });
+
+        }
+
+
+
+</script>
+
